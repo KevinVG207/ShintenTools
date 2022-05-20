@@ -226,36 +226,35 @@ def parse_obj_to_groups(file_path):
         cur_key = list(groups.keys())[0]
         print(cur_key)
         cur_group = groups[cur_key]
-        # print(len(cur_group.vertices))
-        # if len(cur_group.vertices) < 65535:
-        #     part = 0
-        #     truncated_groups.append(groups.pop(cur_key))
-        # else:
         part = 1
-        stop_splitting = False
         while True:
+            stop_splitting = False
             print(f"Splitting {cur_key}")
             new_group_material = cur_group.material + f"_part{part}" if part > 1 else cur_group.material
             new_group = MaterialGroup(new_group_material)
             new_group.texture = cur_group.texture
             cur_vertices = set()
             cur_faces = []
-            while len(cur_group.faces) > 0 and len(cur_vertices) < 65535:
+            while len(cur_group.faces) > 0 and not stop_splitting:
                 cur_face = cur_group.faces.pop(0)
                 for indices in cur_face['indices']:
                     if indices[0] not in cur_vertices:
+                        if len(cur_vertices) == 65535:
+                            stop_splitting = True
+                            cur_group.faces.insert(0, cur_face)
+                            break
                         cur_vertices.add(indices[0])
-                    if len(cur_vertices) < 65535:
-                        cur_faces.append(cur_face)
+                if not stop_splitting:
+                    cur_faces.append(cur_face)
             print(len(cur_vertices))
-            if len(cur_vertices) < 65535:
-                stop_splitting = True
-            else:
-                cur_group.faces.insert(0, cur_faces.pop(-1))
             print(f"Making new subgroup {new_group.material}")
             new_group.vertices, new_group.uvs, new_group.normals, new_group.faces = create_subgroup(cur_faces, cur_group.vertices, cur_group.uvs, cur_group.normals)
+            if len(new_group.vertices) > 65535:
+                print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+                print(len(new_group.vertices))
+                quit()
             truncated_groups[new_group_material] = new_group
-            if stop_splitting:
+            if len(cur_group.faces) == 0:
                 groups.pop(cur_key)
                 break
             part += 1
