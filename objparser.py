@@ -238,12 +238,12 @@ def parse_obj_to_groups(file_path):
             while len(cur_group.faces) > 0 and not stop_splitting:
                 cur_face = cur_group.faces.pop(0)
                 for indices in cur_face['indices']:
-                    if indices[0] not in cur_vertices:
+                    if tuple(indices) not in cur_vertices:
                         if len(cur_vertices) == 65535:
                             stop_splitting = True
                             cur_group.faces.insert(0, cur_face)
                             break
-                        cur_vertices.add(indices[0])
+                        cur_vertices.add(tuple(indices))
                 if not stop_splitting:
                     cur_faces.append(cur_face)
             print(len(cur_vertices))
