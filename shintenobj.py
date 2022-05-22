@@ -2,6 +2,7 @@ import argparse
 import os
 import objparser
 import args
+import time
 
 SHINTEN_MATERIAL_EXTENSION = ".mat"
 
@@ -23,11 +24,13 @@ def main():
     if not os.path.isdir(args.args.output_folder):
         os.makedirs(args.args.output_folder)
     
+    time_before = time.time()
     # Load the obj file
     obj = objparser.OBJ(args.args.input_path)
     obj.write_material_file(args.args.material_file)
     obj.write_files(args.args.output_folder)
-    print("Finished")
+    time_after = time.time()
+    print("Finished in {:.2f} seconds".format(time_after - time_before))
 
 
 if __name__ == '__main__':
