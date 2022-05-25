@@ -43,5 +43,6 @@ if __name__ == '__main__':
     parser.add_argument("-t", "--texture", dest="texture_path", type=str, help="Path to the texture folder that will be used in the materials file. (Relative to input file's location.)", required=False)
     parser.add_argument("-c", "--colmesh", dest="enable_colmeshes", action='store_true', help="Write all materials with collision meshes.", required=False)
     parser.add_argument("-v", "--verbose", dest="verbose", action='store_true', help="Verbose output.", required=False)
+    parser.add_argument("-no-oob", dest="no_oob", action='store_true', help="Don't automatically add out of bounds triggers around your track.", required=False)
     args.args = parser.parse_args()
     main()
