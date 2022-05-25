@@ -14,6 +14,7 @@ def main():
     if not os.path.exists(args.args.input_path):
         print('Input file does not exist')
         return
+    args.args.input_folder = os.path.dirname(args.args.input_path)
     if not args.args.output_folder_relative:
         args.args.output_folder = os.path.dirname(args.args.input_path)
     else:
