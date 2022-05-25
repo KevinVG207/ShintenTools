@@ -1,5 +1,7 @@
 import os
 import args
+from PIL import Image
+
 
 VERSION = '1.0'
 
@@ -93,11 +95,18 @@ class MaterialGroup:
             file.write(str(self))
     
     def generate_unity_material(self):
+        shader = "'Legacy Shaders/Bumped Diffuse'"
+
+        if os.path.isfile(self.texture):
+            img = Image.open(self.texture)
+            if has_transparency(img):
+                shader = "'Legacy Shaders/Transparent/Cutout/Diffuse'"
+
         lines = [
             f"# STTools Material: {self.material}",
             "New",
             f"Mesh \'{os.path.join(args.args.output_folder_relative, self.material)}.obj\'",
-            "BIShader 'Legacy Shaders/Bumped Diffuse'",
+            f"BIShader {shader}",
             f"Texture _MainTex \'{self.texture}\'",
             "MaterialPropertyFloat _Metallic 0.3",
             "MaterialPropertyFloat _Glossiness 0.1"
@@ -109,6 +118,23 @@ class MaterialGroup:
     
     def get_colmesh_string(self):
         return f"New\nColMesh \'{os.path.join(args.args.output_folder_relative, self.material)}.obj\'"
+
+
+def has_transparency(img):
+    # Transparency check taken from:
+    # https://stackoverflow.com/questions/43864101/python-pil-check-if-image-is-transparent
+    if img.info.get("transparency", None) is not None:
+        return True
+    if img.mode == "P":
+        transparent = img.info.get("transparency", -1)
+        for _, index in img.getcolors():
+            if index == transparent:
+                return True
+    elif img.mode == "RGBA":
+        extrema = img.getextrema()
+        if extrema[3][0] < 255:
+            return True
+    return False
 
 
 def coords_string(coords, type):
