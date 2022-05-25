@@ -14,8 +14,10 @@ def main():
     if not os.path.exists(args.args.input_path):
         print('Input file does not exist')
         return
-    if not args.args.output_folder:
+    if not args.args.output_folder_relative:
         args.args.output_folder = os.path.dirname(args.args.input_path)
+    else:
+        args.args.output_folder = os.path.join(os.path.dirname(args.args.input_path), args.args.output_folder_relative)
     if args.args.material_file and not os.path.exists(args.args.material_file):
         print("Provided material file not found.")
         return
@@ -36,8 +38,10 @@ def main():
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Creates Shinten Course models from a .obj file.")
     parser.add_argument("-i", "--input", dest="input_path", type=str, help="Input .obj file", required=True)
-    parser.add_argument("-o", "--output", dest="output_folder", type=str, help="Output folder (otherwise files will be written in the folder of the input.)", required=False)
+    parser.add_argument("-o", "--output", dest="output_folder_relative", type=str, help="Output folder (otherwise files will be written in the folder of the input. Relative to input file's location.)", required=False)
     parser.add_argument("-m", "--material", dest="material_file", action='store_true', help="Manually provide a Shinten Tools-generated materials file.", required=False)
+    parser.add_argument("-t", "--texture", dest="texture_path", type=str, help="Path to the texture folder that will be used in the materials file. (Relative to input file's location.)", required=False)
+    parser.add_argument("-c", "--colmesh", dest="enable_colmeshes", action='store_true', help="Write all materials with collision meshes.", required=False)
     parser.add_argument("-v", "--verbose", dest="verbose", action='store_true', help="Verbose output.", required=False)
     args.args = parser.parse_args()
     main()
