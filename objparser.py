@@ -121,7 +121,7 @@ class MaterialGroup:
         return '\n'.join(lines)
 
     def get_copy_string(self):
-        return f"Copy;Mesh \'{self.material}.obj\'"
+        return f"Copy;Mesh \'{os.path.join(args.args.output_folder_relative, self.material)}.obj\'"
     
     def get_colmesh_string(self):
         return f"New\nColMesh \'{os.path.join(args.args.output_folder_relative, self.material)}.obj\'"
