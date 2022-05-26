@@ -104,7 +104,6 @@ class MaterialGroup:
     def generate_unity_material(self):
         shader = "'Legacy Shaders/Bumped Diffuse'"
 
-        print(os.path.join(args.args.input_folder, self.texture))
         if self.texture and os.path.isfile(os.path.join(args.args.input_folder, self.texture)):
             img = Image.open(os.path.join(args.args.input_folder, self.texture))
             if has_transparency(img):
@@ -174,7 +173,17 @@ def faces_string(faces):
         if face['smoothing'] != current_smooth:
             current_smooth = face['smoothing']
             out.append(f"s {current_smooth}")
-        out.append('f ' + ' '.join(['/'.join([str(index + 1) for index in indices]) for indices in face['indices']]))
+        cur_face = []
+        for indices in face['indices']:
+            cur_indices = []
+            for index in indices:
+                if isinstance(index, str):
+                    cur_indices.append(index)
+                else:
+                    cur_indices.append(str(index + 1))
+            cur_face.append('/'.join(cur_indices))
+        out.append('f ' + ' '.join(cur_face))
+        # out.append('f ' + ' '.join(['/'.join([str(index + 1) for index in indices]) for indices in face['indices']]))
 
     return '\n'.join(out)
 
